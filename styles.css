@@ -1,0 +1,218 @@
+/* General resets and basic styling */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  background-color: #f9f9f9;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Header styles */
+header {
+  background-color: #333;
+  color: #fff;
+  padding: 10px 0;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+header h1 {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+}
+
+/* Main content sections */
+main {
+  display: flex;
+  justify-content: space-between;
+}
+
+section,
+aside {
+  flex-basis: calc(50% - 20px);
+}
+
+section {
+  background-color: #fff;
+  margin: 20px 0;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+section:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+section h2,
+aside h2 {
+  color: #333;
+  font-size: 2em;
+  margin-bottom: 15px;
+}
+
+/* Form and input styles */
+form label {
+  display: block;
+  margin-bottom: 8px;
+  color: #555;
+}
+
+form input[type="text"],
+form input[type="date"],
+form button {
+  padding: 10px;
+  margin-bottom: 15px;
+  width: 100%;
+  font-size: 1em;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  transition: border-color 0.3s ease;
+}
+
+form input[type="text"]:focus,
+form input[type="date"]:focus,
+form button:focus {
+  outline: none;
+  border-color: #333;
+}
+
+form button {
+  background-color: #333;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+form button:hover {
+  background-color: #555;
+}
+
+/* Task list styles */
+ul#task-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+ul#task-list li {
+  margin-bottom: 10px;
+  color: #555;
+  font-size: 1.1em;
+  line-height: 1.6;
+}
+
+ul#task-list li input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+ul#task-list li label {
+  cursor: pointer;
+}
+
+/* Checked tasks styles */
+ul#task-list li input[type="checkbox"]:checked + label {
+  text-decoration: line-through;
+  color: #999;
+}
+
+/* Date and Time section */
+#datetime-section {
+  background-color: #fff;
+  margin: 20px 0;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#datetime-section:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+#datetime-section .datetime {
+  font-size: 1.6em;
+  color: #666;
+  text-align: center;
+}
+
+/* Clock styles */
+.clock-container {
+  text-align: center;
+}
+
+#clock {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  border: 10px solid #333;
+}
+
+#digital-clock-section {
+  background: #fff;
+  margin: 20px 0;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.digital-clock {
+  background: #000;
+  border-radius: 10px;
+  padding: 20px 30px;
+  display: inline-block;
+  position: relative;
+  color: #fff;
+}
+
+.status-bar {
+  display: flex;
+  gap: 12px;
+  font-size: 0.9em;
+  margin-bottom: 10px;
+  opacity: 0.7;
+}
+
+.status-bar #amPm {
+  font-weight: bold;
+}
+
+.time-display {
+  font-family: "Courier New", monospace;
+  font-size: 4rem;
+  letter-spacing: 4px;
+  line-height: 1;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.8),
+    0 0 8px rgba(255, 255, 255, 0.6);
+}
+
+/* Delete button styles */
+#delete-after-today {
+    background-color: #ff6347; /* Tomato red */
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+    margin-top: 15px; /* Adjust margin as needed */
+}
+
+#delete-after-today:hover {
+    background-color: #d64541; /* Darker shade of red on hover */
+}

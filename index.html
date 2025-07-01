@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karthik Schedule Maker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Karthik Schedule Maker</h1>
+        </div>
+    </header>
+    <main>
+    <!-- Task management section -->
+    <section id="tasks">
+        <div class="container">
+            <h2>Tasks</h2>
+            <form id="schedule-form">
+                <label for="event">Event:</label>
+                <input type="text" id="event" required>
+                <label for="date">Date:</label>
+                <input type="date" id="date" required>
+                <button type="submit">Add Event</button>
+            </form>
+            <ul id="task-list">
+                <!-- Tasks will be populated dynamically -->
+            </ul>
+            <button id="delete-after-today">Delete All</button>
+        </div>
+    </section>
+
+    <!-- Digital clock section -->
+    <section id="digital-clock-section">
+        <div class="container">
+            <h2>Digital Clock</h2>
+            <div class="digital-clock">
+                <div class="status-bar">
+                    <span id="amPm">AM</span>
+                    <span class="icon">🔊</span>
+                    <span class="icon">📀</span>
+                    <span class="icon">⏰</span>
+                </div>
+                <div class="time-display" id="digitalTime">12:00</div>
+            </div>
+        </div>
+    </section>
+</main>
+
+    <script src="script.js"></script>
+</body>
+</html>
