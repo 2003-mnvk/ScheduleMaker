@@ -1,176 +1,254 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Karthik Schedule Maker Pro</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
     <header>
-        <div class="container">
-            <h1>Karthik Schedule Maker Pro</h1>
-            <div class="header-controls">
-                <button id="theme-toggle" title="Toggle dark mode">
-                    <i class="fas fa-moon"></i>
-                </button>
-                <button id="export-btn" title="Export tasks">
-                    <i class="fas fa-file-export"></i>
-                </button>
-                <button id="import-btn" title="Import tasks">
-                    <i class="fas fa-file-import"></i>
-                </button>
-                <input type="file" id="import-file" accept=".json" style="display: none;">
-            </div>
+      <div class="container">
+        <h1>Karthik Schedule Maker Pro</h1>
+        <div class="header-controls">
+          <button id="theme-toggle" title="Toggle dark mode">
+            <i class="fas fa-moon"></i>
+          </button>
+          <button id="export-btn" title="Export tasks">
+            <i class="fas fa-file-export"></i>
+          </button>
+          <button id="import-btn" title="Import tasks">
+            <i class="fas fa-file-import"></i>
+          </button>
+          <input
+            type="file"
+            id="import-file"
+            accept=".json"
+            style="display: none"
+          />
         </div>
+      </div>
     </header>
     <main>
-        <div class="main-container">
-            <!-- Task management section -->
-            <section id="tasks">
-                <div class="container">
-                    <div class="task-controls">
-                        <h2>Task Manager</h2>
-                        <div class="search-filter">
-                            <input type="text" id="task-search" placeholder="Search tasks...">
-                            <select id="category-filter">
-                                <option value="all">All Categories</option>
-                                <option value="work">Work</option>
-                                <option value="personal">Personal</option>
-                                <option value="health">Health</option>
-                                <option value="education">Education</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <form id="schedule-form">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="event">Task Name*</label>
-                                <input type="text" id="event" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="date">Due Date*</label>
-                                <input type="date" id="date" required>
-                            </div>
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="priority">Priority</label>
-                                <select id="priority">
-                                    <option value="low">⭕ Low</option>
-                                    <option value="medium" selected>⏳ Medium</option>
-                                    <option value="high">⭐️ High</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="category">Category</label>
-                                <select id="category">
-                                    <option value="work">Work</option>
-                                    <option value="personal" selected>Personal</option>
-                                    <option value="health">Health</option>
-                                    <option value="education">Education</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="notes">Notes</label>
-                            <textarea id="notes" rows="2"></textarea>
-                        </div>
-                        
-                        <button type="submit">Add Task</button>
-                    </form>
-                    
-                    <div class="task-stats">
-                        <span id="total-tasks">Total: 0</span>
-                        <span id="completed-tasks">Completed: 0</span>
-                        <span id="pending-tasks">Pending: 0</span>
-                    </div>
-                    
-                    <ul id="task-list">
-                        <!-- Tasks will be populated dynamically -->
-                    </ul>
-                    
-                    <button id="delete-completed" class="delete-btn">
-                        <i class="fas fa-trash"></i> Clear Completed Tasks
-                    </button>
-                </div>
-
-                <section class="pomodoro-section">
-  <div class="container">
-    <h2>Pomodoro Timer</h2>
-    <div class="pomodoro-timer">
-      <div class="timer-display">25:00</div>
-      <div class="timer-controls">
-        <button id="pomodoro-start">Start</button>
-        <button id="pomodoro-pause">Pause</button>
-        <button id="pomodoro-reset">Reset</button>
-      </div>
-      <div class="pomodoro-cycles">
-        <span>Completed Cycles: </span>
-        <span id="cycle-count">0</span>
-      </div>
-    </div>
-  </div>
-</section>
-            </section>
-
-            <!-- Right column sections -->
-            <div class="right-column">
-                <!-- Digital clock section -->
-                <section id="digital-clock-section">
-                    <div class="container">
-                        <h2>World Clock</h2>
-                        <div class="digital-clock">
-                            <div class="status-bar">
-                                <span id="amPm">AM</span>
-                                <span class="icon"><i class="fas fa-volume-up"></i></span>
-                                <span class="icon"><i class="fas fa-calendar-alt"></i></span>
-                                <span class="icon"><i class="fas fa-clock"></i></span>
-                            </div>
-                            <div class="time-display" id="digitalTime">12:00</div>
-                            <div class="date-display" id="digitalDate">January 1, 2023</div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Stopwatch section -->
-                <section class="stopwatch-section">
-                    <div class="container">
-                        <h2>Stopwatch</h2>
-                        <div class="stopwatch">
-                            <div class="display">00:00:00</div>
-                            <div class="buttons">
-                                <button id="startBtn"><i class="fas fa-play"></i></button>
-                                <button id="stopBtn"><i class="fas fa-stop"></i></button>
-                                <button id="resetBtn"><i class="fas fa-redo"></i></button>
-                                <button id="lapBtn"><i class="fas fa-flag"></i></button>
-                            </div>
-                            <ul id="lap-times"></ul>
-                        </div>
-                    </div>
-                </section>
-
-                
-                
-                <!-- Quick Notes Section -->
-                <section class="notes-section">
-                    <div class="container">
-                        <h2>Quick Notes</h2>
-                        <textarea id="quick-notes" placeholder="Type your quick notes here..."></textarea>
-                        <button id="save-notes">Save Notes</button>
-                    </div>
-                </section>
+      <div class="main-container">
+        <!-- Task management section -->
+        <section id="tasks">
+          <div class="container">
+            <div class="task-controls">
+              <h2>Task Manager</h2>
+              <div class="search-filter">
+                <input
+                  type="text"
+                  id="task-search"
+                  placeholder="Search tasks..."
+                />
+                <select id="category-filter">
+                  <option value="all">All Categories</option>
+                  <option value="Modern History">Modern History</option>
+                  <option value="World History" selected>World History</option>
+                  <option value="Ancient History">Ancient History</option>
+                  <option value="Medieval History">Medieval History</option>
+                  <option value="Geography">Geography</option>
+                  <option value="Polity">Polity</option>
+                  <option value="Economy">Economy</option>
+                  <option value="Ethics, Integrity and Aptitude">
+                    Ethics, Integrity and Aptitude
+                  </option>
+                  <option value="Environment">Environment</option>
+                  <option value="Science and Technology">
+                    Science and Technology
+                  </option>
+                  <option value="Governance">Governance</option>
+                  <option value="Art & Culture">Art & Culture</option>
+                  <option value="International Relations">
+                    International Relations
+                  </option>
+                  <option value="Society, Social Issues, Social Justice">
+                    Society, Social Issues, Social Justice
+                  </option>
+                  <option value="Internal Security">Internal Security</option>
+                  <option value="Disaster Management">
+                    Disaster Management
+                  </option>
+                </select>
+                <select id="subcategory-filter">
+                  <option value="all">All Sub-Categories</option>
+                  <option value="DPP(Prelims)" selected>DPP(Prelims)</option>
+                  <option value="DMP(Mains)" selected>DMP(Mains)</option>
+                  <option value="Revision" selected>Revision</option>
+                  <option value="TCS" selected>TCS</option>
+                </select>
+              </div>
             </div>
+
+            <form id="schedule-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="event">Task Name*</label>
+                  <input type="text" id="event" required />
+                </div>
+                <div class="form-group">
+                  <label for="date">Due Date*</label>
+                  <input type="date" id="date" required />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="priority">Priority</label>
+                  <select id="priority">
+                    <option value="low">⭕ Low</option>
+                    <option value="medium" selected>⏳ Medium</option>
+                    <option value="high">⭐️ High</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="category">Category</label>
+                  <select id="category">
+                    <option value="Subject">Subject</option>
+                    <option value="Modern History">Modern History</option>
+                    <option value="World History">World History</option>
+                    <option value="Ancient History">Ancient History</option>
+                    <option value="Medieval History">Medieval History</option>
+                    <option value="Geography">Geography</option>
+                    <option value="Polity">Polity</option>
+                    <option value="Economy">Economy</option>
+                    <option value="Ethics, Integrity and Aptitude">
+                      Ethics, Integrity and Aptitude
+                    </option>
+                    <option value="Environment">Environment</option>
+                    <option value="Science and Technology">
+                      Science and Technology
+                    </option>
+                    <option value="Governance">Governance</option>
+                    <option value="Art & Culture">Art & Culture</option>
+                    <option value="International Relations">
+                      International Relations
+                    </option>
+                    <option value="Society, Social Issues, Social Justice">
+                      Society, Social Issues, Social Justice
+                    </option>
+                    <option value="Internal Security">Internal Security</option>
+                    <option value="Disaster Management">
+                      Disaster Management
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="subcategory">Sub-Category</label>
+                  <select id="subcategory">
+                    <option value="General" selected>General</option>
+                    <option value="DPP(Prelims)">DPP(Prelims)</option>
+                    <option value="DMP(Mains)">DMP(Mains)</option>
+                    <option value="Revision">Revision</option>
+                    <option value="TCS">TCS</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="notes">Notes</label>
+                <textarea id="notes" rows="2"></textarea>
+              </div>
+
+              <button type="submit">Add Task</button>
+            </form>
+
+            <div class="task-stats">
+              <span id="total-tasks">Total: 0</span>
+              <span id="completed-tasks">Completed: 0</span>
+              <span id="pending-tasks">Pending: 0</span>
+            </div>
+
+            <ul id="task-list">
+              <!-- Tasks will be populated dynamically -->
+            </ul>
+
+            <button id="delete-completed" class="delete-btn">
+              <i class="fas fa-trash"></i> Clear Completed Tasks
+            </button>
+          </div>
+
+          <section class="pomodoro-section">
+            <div class="container">
+              <h2>Pomodoro Timer</h2>
+              <div class="pomodoro-timer">
+                <div class="timer-display">25:00</div>
+                <div class="timer-controls">
+                  <button id="pomodoro-start">Start</button>
+                  <button id="pomodoro-pause">Pause</button>
+                  <button id="pomodoro-reset">Reset</button>
+                </div>
+                <div class="pomodoro-cycles">
+                  <span>Completed Cycles: </span>
+                  <span id="cycle-count">0</span>
+                </div>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <!-- Right column sections -->
+        <div class="right-column">
+          <!-- Digital clock section -->
+          <section id="digital-clock-section">
+            <div class="container">
+              <h2>World Clock</h2>
+              <div class="digital-clock">
+                <div class="status-bar">
+                  <span id="amPm">AM</span>
+                  <span class="icon"><i class="fas fa-volume-up"></i></span>
+                  <span class="icon"><i class="fas fa-calendar-alt"></i></span>
+                  <span class="icon"><i class="fas fa-clock"></i></span>
+                </div>
+                <div class="time-display" id="digitalTime">12:00</div>
+                <div class="date-display" id="digitalDate">January 1, 2023</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Stopwatch section -->
+          <section class="stopwatch-section">
+            <div class="container">
+              <h2>Stopwatch</h2>
+              <div class="stopwatch">
+                <div class="display">00:00:00</div>
+                <div class="buttons">
+                  <button id="startBtn"><i class="fas fa-play"></i></button>
+                  <button id="stopBtn"><i class="fas fa-stop"></i></button>
+                  <button id="resetBtn"><i class="fas fa-redo"></i></button>
+                  <button id="lapBtn"><i class="fas fa-flag"></i></button>
+                </div>
+                <ul id="lap-times"></ul>
+              </div>
+            </div>
+          </section>
+
+          <!-- Quick Notes Section -->
+          <section class="notes-section">
+            <div class="container">
+              <h2>Quick Notes</h2>
+              <textarea
+                id="quick-notes"
+                placeholder="Type your quick notes here..."
+              ></textarea>
+              <button id="save-notes">Save Notes</button>
+            </div>
+          </section>
         </div>
+      </div>
     </main>
 
     <canvas id="confetti-canvas"></canvas>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
     <script src="script.js"></script>
-</body>
+  </body>
 </html>
