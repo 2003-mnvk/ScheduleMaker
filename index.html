@@ -155,10 +155,33 @@
                 </div>
               </div>
 
+              <!-- Add these new form fields in your existing form -->
+<div class="form-row">
+  <div class="form-group">
+    <label for="recurrence">Repeat</label>
+    <select id="recurrence">
+      <option value="none">No Repeat</option>
+      <option value="daily">Daily</option>
+      <option value="weekly">Weekly</option>
+      <option value="spaced">Spaced Repetition</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="estimated-time">Est. Time (min)</label>
+    <input type="number" id="estimated-time" min="5" value="30">
+  </div>
+</div>
+
+<div class="form-group">
+  <label for="resources">Resources (comma separated URLs)</label>
+  <input type="text" id="resources" placeholder="https://example.com/notes.pdf, https://example.com/video">
+</div>
+
               <div class="form-group">
                 <label for="notes">Notes</label>
                 <textarea id="notes" rows="2"></textarea>
               </div>
+
 
               <button type="submit">Add Task</button>
             </form>
