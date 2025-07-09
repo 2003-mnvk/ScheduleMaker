@@ -3,7 +3,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const jsConfetti = new JSConfetti();
 
   // DOM Elements
-  const taskList = document.getElementById("task-list");
+  const pendingTaskList = document.getElementById("pending-task-list");
+  const completedTaskList = document.getElementById("completed-task-list");
   const scheduleForm = document.getElementById("schedule-form");
   const deleteButton = document.getElementById("delete-completed");
   const taskSearch = document.getElementById("task-search");
@@ -18,14 +19,23 @@ document.addEventListener("DOMContentLoaded", function () {
   const totalTasksEl = document.getElementById("total-tasks");
   const completedTasksEl = document.getElementById("completed-tasks");
   const pendingTasksEl = document.getElementById("pending-tasks");
+  const focusModeBtn = document.getElementById("focus-mode");
 
   // Timer variables
   let activeTimer = null;
+  let isFocusMode = false;
 
   // Check for saved theme preference
   const currentTheme = localStorage.getItem("theme") || "light";
   document.documentElement.setAttribute("data-theme", currentTheme);
   updateThemeIcon(currentTheme);
+
+  // Check for saved focus mode state
+  const savedFocusMode = localStorage.getItem("focusMode") === "true";
+  if (savedFocusMode) {
+    document.body.classList.add("focus-mode");
+    activateFocusMode();
+  }
 
   // Load all data
   loadTasks();
@@ -50,11 +60,13 @@ document.addEventListener("DOMContentLoaded", function () {
   importBtn.addEventListener("click", () => importFile.click());
   importFile.addEventListener("change", importTasks);
   saveNotesBtn.addEventListener("click", saveQuickNotes);
+  focusModeBtn.addEventListener("click", toggleFocusMode);
 
   // Task Functions
   function loadTasks() {
     const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    taskList.innerHTML = "";
+    pendingTaskList.innerHTML = "";
+    completedTaskList.innerHTML = "";
 
     // Sort tasks by completion status and then by their saved order
     tasks.sort((a, b) => {
@@ -64,10 +76,19 @@ document.addEventListener("DOMContentLoaded", function () {
       return (a.order || 0) - (b.order || 0); // Then sort by saved order
     });
 
-    tasks.forEach((task) => addTaskToList(task));
+    tasks.forEach((task) => {
+      if (task.completed) {
+        addTaskToList(task, completedTaskList);
+      } else {
+        addTaskToList(task, pendingTaskList);
+      }
+    });
   }
 
-  function addTaskToList(task) {
+  function addTaskToList(task, listElement = null) {
+    const targetList =
+      listElement || (task.completed ? completedTaskList : pendingTaskList);
+
     const listItem = document.createElement("li");
     listItem.draggable = true;
     listItem.dataset.id = task.id;
@@ -100,87 +121,93 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Time tracking HTML
     const timeTrackingHTML = `
-      <div class="time-tracking">
-        <span class="time-spent">${task.timeSpent || 0}</span> / 
-        <span class="time-estimated">${task.estimatedTime || 30}</span> mins
-        <button class="start-timer" title="Start Timer"><i class="fas fa-play"></i></button>
-        <button class="stop-timer" title="Stop Timer"><i class="fas fa-stop"></i></button>
-        <div class="progress-bar">
-          <div class="progress-fill" style="width: ${Math.min(
-            100,
-            ((task.timeSpent || 0) / (task.estimatedTime || 30)) * 100
-          )}%"></div>
-        </div>
-      </div>
-    `;
+            <div class="time-tracking">
+              <span class="time-spent">${task.timeSpent || 0}</span> / 
+              <span class="time-estimated">${
+                task.estimatedTime || 30
+              }</span> mins
+              <button class="start-timer" title="Start Timer"><i class="fas fa-play"></i></button>
+              <button class="stop-timer" title="Stop Timer"><i class="fas fa-stop"></i></button>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: ${Math.min(
+                  100,
+                  ((task.timeSpent || 0) / (task.estimatedTime || 30)) * 100
+                )}%"></div>
+              </div>
+            </div>
+          `;
 
     // Resources HTML
     const resourcesHTML =
       task.resources && task.resources.length > 0
         ? `
-      <div class="task-resources">
-        <strong>Resources:</strong>
-        ${task.resources
-          .map(
-            (url) => `
-          <a href="${url}" target="_blank"><i class="fas fa-link"></i> ${url.substring(
-              0,
-              30
-            )}${url.length > 30 ? "..." : ""}</a>
-        `
-          )
-          .join("")}
-      </div>
-    `
+            <div class="task-resources">
+              <strong>Resources:</strong>
+              ${task.resources
+                .map(
+                  (url) => `
+                <a href="${url}" target="_blank"><i class="fas fa-link"></i> ${url.substring(
+                    0,
+                    30
+                  )}${url.length > 30 ? "..." : ""}</a>
+              `
+                )
+                .join("")}
+            </div>
+          `
         : "";
 
     // Recurrence indicator
     const recurrenceHTML =
       task.recurrence && task.recurrence !== "none"
         ? `
-      <span class="recurrence-badge">${
-        task.recurrence === "spaced"
-          ? "🔄 Spaced"
-          : task.recurrence === "daily"
-          ? "🔄 Daily"
-          : "🔄 Weekly"
-      }</span>
-    `
+            <span class="recurrence-badge">${
+              task.recurrence === "spaced"
+                ? "🔄 Spaced"
+                : task.recurrence === "daily"
+                ? "🔄 Daily"
+                : "🔄 Weekly"
+            }</span>
+          `
         : "";
 
     listItem.innerHTML = `
-      <input type="checkbox" id="task-${task.id}" ${
+            <input type="checkbox" id="task-${task.id}" ${
       task.completed ? "checked" : ""
     }>
-      <div class="task-content">
-          <div class="task-title">
-              <span class="priority ${priorityClasses[task.priority]}">${
+            <div class="task-content">
+                <div class="task-title">
+                    <span class="priority ${priorityClasses[task.priority]}">${
       priorityIcons[task.priority]
     }</span>
-              <span class="task-text">${task.text}</span>
-              ${recurrenceHTML}
-          </div>
-          <div class="task-meta">
-              <span class="task-date"><i class="far fa-calendar-alt"></i> ${
-                task.date
-              }</span>
-              <span class="task-category">${task.category}</span>
-              <span class="task-subcategory">${
-                task.subcategory || "General"
-              }</span>
-          </div>
-          ${timeTrackingHTML}
-          ${task.notes ? `<div class="task-notes">${task.notes}</div>` : ""}
-          ${resourcesHTML}
-      </div>
-      <div class="task-actions">
-          <button class="edit-task" title="Edit task"><i class="far fa-edit"></i></button>
-          <button class="toggle-notes" title="Toggle notes"><i class="fas fa-chevron-down"></i></button>
-          <button class="delete-task" title="Delete task"><i class="far fa-trash-alt"></i></button>
-      </div>
-    `;
+                    <span class="task-text">${task.text}</span>
+                    ${recurrenceHTML}
+                </div>
+                <div class="task-meta">
+                    <span class="task-date"><i class="far fa-calendar-alt"></i> ${
+                      task.date
+                    }</span>
+                    <span class="task-category">${task.category}</span>
+                    <span class="task-subcategory">${
+                      task.subcategory || "General"
+                    }</span>
+                </div>
+                ${timeTrackingHTML}
+                ${
+                  task.notes
+                    ? `<div class="task-notes">${task.notes}</div>`
+                    : ""
+                }
+                ${resourcesHTML}
+            </div>
+            <div class="task-actions">
+                <button class="edit-task" title="Edit task"><i class="far fa-edit"></i></button>
+                <button class="toggle-notes" title="Toggle notes"><i class="fas fa-chevron-down"></i></button>
+                <button class="delete-task" title="Delete task"><i class="far fa-trash-alt"></i></button>
+            </div>
+          `;
 
-    taskList.appendChild(listItem);
+    targetList.appendChild(listItem);
 
     // Add event listeners for the new task
     const checkbox = listItem.querySelector("input[type='checkbox']");
@@ -194,16 +221,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
     checkbox.addEventListener("change", () => {
       toggleTaskComplete(task.id, checkbox.checked);
+      // Move task to the appropriate list
+      listItem.remove();
       if (checkbox.checked) {
-        // Move completed task to bottom
-        listItem.remove();
-        taskList.appendChild(listItem);
+        addTaskToList(task, completedTaskList);
         // Celebrate task completion!
         jsConfetti.addConfetti({
           emojis: ["✅", "🎉", "✨", "👏"],
           emojiSize: 30,
           confettiNumber: 30,
         });
+      } else {
+        addTaskToList(task, pendingTaskList);
       }
     });
 
@@ -388,7 +417,7 @@ document.addEventListener("DOMContentLoaded", function () {
         notes: notes,
         completed: false,
         createdAt: new Date().toISOString(),
-        order: document.querySelectorAll("#task-list li").length,
+        order: document.querySelectorAll("#pending-task-list li").length,
         recurrence: recurrence,
         estimatedTime: estimatedTime,
         timeSpent: 0,
@@ -396,7 +425,7 @@ document.addEventListener("DOMContentLoaded", function () {
         repetitions: 0,
       };
 
-      addTaskToList(newTask);
+      addTaskToList(newTask, pendingTaskList);
       saveTask(newTask);
       updateTaskStats();
       scheduleForm.reset();
@@ -446,7 +475,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const nextTask = handleRecurrence(tasks[taskIndex]);
         if (nextTask) {
           tasks.push(nextTask);
-          addTaskToList(nextTask);
+          addTaskToList(nextTask, pendingTaskList);
         }
       }
 
@@ -473,14 +502,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function saveTaskOrder() {
     const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    const taskElements = taskList.querySelectorAll("li");
+    const pendingTaskElements = pendingTaskList.querySelectorAll("li");
+    const completedTaskElements = completedTaskList.querySelectorAll("li");
 
-    // Update order property based on current DOM position
-    taskElements.forEach((el, index) => {
+    // Update order property for pending tasks
+    pendingTaskElements.forEach((el, index) => {
       const taskId = parseInt(el.dataset.id);
       const taskIndex = tasks.findIndex((task) => task.id === taskId);
       if (taskIndex !== -1) {
         tasks[taskIndex].order = index;
+      }
+    });
+
+    // Update order property for completed tasks
+    completedTaskElements.forEach((el, index) => {
+      const taskId = parseInt(el.dataset.id);
+      const taskIndex = tasks.findIndex((task) => task.id === taskId);
+      if (taskIndex !== -1) {
+        tasks[taskIndex].order = index + pendingTaskElements.length;
       }
     });
 
@@ -490,7 +529,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Set up drag and drop with order persistence
   let draggedItem = null;
 
-  taskList.addEventListener("dragstart", (e) => {
+  pendingTaskList.addEventListener("dragstart", (e) => {
     if (e.target.tagName === "LI") {
       draggedItem = e.target;
       e.target.classList.add("dragging");
@@ -499,19 +538,19 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  taskList.addEventListener("dragover", (e) => {
+  pendingTaskList.addEventListener("dragover", (e) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
 
-    const afterElement = getDragAfterElement(taskList, e.clientY);
+    const afterElement = getDragAfterElement(pendingTaskList, e.clientY);
     if (afterElement == null) {
-      taskList.appendChild(draggedItem);
+      pendingTaskList.appendChild(draggedItem);
     } else {
-      taskList.insertBefore(draggedItem, afterElement);
+      pendingTaskList.insertBefore(draggedItem, afterElement);
     }
   });
 
-  taskList.addEventListener("dragend", (e) => {
+  pendingTaskList.addEventListener("dragend", (e) => {
     if (e.target.tagName === "LI") {
       e.target.classList.remove("dragging");
       saveTaskOrder(); // Save the new order
@@ -542,32 +581,40 @@ document.addEventListener("DOMContentLoaded", function () {
     const searchTerm = taskSearch.value.toLowerCase();
     const category = categoryFilter.value;
     const subcategory = subcategoryFilter.value;
-    const taskElements = taskList.querySelectorAll("li");
 
-    taskElements.forEach((taskEl) => {
+    // Filter pending tasks
+    const pendingTaskElements = pendingTaskList.querySelectorAll("li");
+    pendingTaskElements.forEach((taskEl) => {
       const text = taskEl.textContent.toLowerCase();
       const taskCategory = taskEl.dataset.category;
       const taskSubcategory = taskEl.dataset.subcategory;
       const isHighPriority = taskEl.querySelector(".priority-high");
-      const isCompleted = taskEl.querySelector(
-        'input[type="checkbox"]'
-      ).checked;
 
       const matchesSearch = text.includes(searchTerm);
       const matchesCategory = category === "all" || taskCategory === category;
       const matchesSubcategory =
         subcategory === "all" || taskSubcategory === subcategory;
 
-      // New focus mode condition
-      const focusCondition =
-        !isFocusMode || (isFocusMode && isHighPriority && !isCompleted);
+      if (matchesSearch && matchesCategory && matchesSubcategory) {
+        taskEl.style.display = "flex";
+      } else {
+        taskEl.style.display = "none";
+      }
+    });
 
-      if (
-        matchesSearch &&
-        matchesCategory &&
-        matchesSubcategory &&
-        focusCondition
-      ) {
+    // Filter completed tasks
+    const completedTaskElements = completedTaskList.querySelectorAll("li");
+    completedTaskElements.forEach((taskEl) => {
+      const text = taskEl.textContent.toLowerCase();
+      const taskCategory = taskEl.dataset.category;
+      const taskSubcategory = taskEl.dataset.subcategory;
+
+      const matchesSearch = text.includes(searchTerm);
+      const matchesCategory = category === "all" || taskCategory === category;
+      const matchesSubcategory =
+        subcategory === "all" || taskSubcategory === subcategory;
+
+      if (matchesSearch && matchesCategory && matchesSubcategory) {
         taskEl.style.display = "flex";
       } else {
         taskEl.style.display = "none";
@@ -599,6 +646,42 @@ document.addEventListener("DOMContentLoaded", function () {
   function updateThemeIcon(theme) {
     const icon = themeToggle.querySelector("i");
     icon.className = theme === "light" ? "fas fa-moon" : "fas fa-sun";
+  }
+
+  // Focus Mode Functions
+  function toggleFocusMode() {
+    isFocusMode = !isFocusMode;
+    document.body.classList.toggle("focus-mode", isFocusMode);
+    localStorage.setItem("focusMode", isFocusMode.toString());
+
+    if (isFocusMode) {
+      activateFocusMode();
+    } else {
+      deactivateFocusMode();
+    }
+  }
+
+  function activateFocusMode() {
+    const pomodoro = document.querySelector(".pomodoro-section");
+    document.body.appendChild(pomodoro);
+    pomodoro.classList.add("focus-pomodoro");
+
+    const exitBtn = document.createElement("button");
+    exitBtn.className = "exit-focus";
+    exitBtn.innerHTML = '<i class="fas fa-times"></i> Exit Focus';
+    document.body.appendChild(exitBtn);
+
+    exitBtn.addEventListener("click", () => {
+      toggleFocusMode();
+    });
+  }
+
+  function deactivateFocusMode() {
+    const tasksSection = document.getElementById("tasks");
+    const pomodoro = document.querySelector(".pomodoro-section");
+    tasksSection.querySelector(".container").appendChild(pomodoro);
+    pomodoro.classList.remove("focus-pomodoro");
+    document.querySelector(".exit-focus")?.remove();
   }
 
   // Import/Export Functions
@@ -886,91 +969,3 @@ document.addEventListener("DOMContentLoaded", function () {
     updateDisplay();
   }
 });
-// Replace any existing focus mode code with this:
-
-// Create Focus Mode button
-const focusModeBtn = document.createElement('button');
-focusModeBtn.id = 'focus-mode';
-focusModeBtn.innerHTML = '<i class="fas fa-crosshairs"></i> Focus Mode';
-document.querySelector('.header-controls').appendChild(focusModeBtn);
-
-let isFocusMode = false;
-
-focusModeBtn.addEventListener('click', () => {
-  isFocusMode = !isFocusMode;
-  document.body.classList.toggle('focus-mode', isFocusMode);
-  
-  if (isFocusMode) {
-    // Move Pomodoro timer to center
-    const pomodoro = document.querySelector('.pomodoro-section');
-    document.body.appendChild(pomodoro);
-    pomodoro.classList.add('focus-pomodoro');
-    
-    // Create exit button
-    const exitBtn = document.createElement('button');
-    exitBtn.className = 'exit-focus';
-    exitBtn.innerHTML = '<i class="fas fa-times"></i> Exit Focus';
-    document.body.appendChild(exitBtn);
-    
-    exitBtn.addEventListener('click', () => {
-      focusModeBtn.click(); // Toggle focus mode off
-    });
-  } else {
-    // Return Pomodoro to original position
-    const tasksSection = document.getElementById('tasks');
-    tasksSection.querySelector('.container').appendChild(
-      document.querySelector('.pomodoro-section')
-    );
-    document.querySelector('.pomodoro-section').classList.remove('focus-pomodoro');
-    
-    // Remove exit button
-    document.querySelector('.exit-focus')?.remove();
-  }
-});
-
-// Update your existing Focus Mode code:
-
-// Check for saved focus mode state
-const savedFocusMode = localStorage.getItem('focusMode') === 'true';
-if (savedFocusMode) {
-  document.body.classList.add('focus-mode');
-  activateFocusMode(); // Initialize focus mode if it was active
-}
-
-focusModeBtn.addEventListener('click', () => {
-  const newFocusMode = !document.body.classList.contains('focus-mode');
-  document.body.classList.toggle('focus-mode', newFocusMode);
-  localStorage.setItem('focusMode', newFocusMode.toString());
-  
-  if (newFocusMode) {
-    activateFocusMode();
-  } else {
-    deactivateFocusMode();
-  }
-});
-
-// Separate functions for cleaner code
-function activateFocusMode() {
-  const pomodoro = document.querySelector('.pomodoro-section');
-  document.body.appendChild(pomodoro);
-  pomodoro.classList.add('focus-pomodoro');
-  
-  const exitBtn = document.createElement('button');
-  exitBtn.className = 'exit-focus';
-  exitBtn.innerHTML = '<i class="fas fa-times"></i> Exit Focus';
-  document.body.appendChild(exitBtn);
-  
-  exitBtn.addEventListener('click', () => {
-    document.body.classList.remove('focus-mode');
-    localStorage.setItem('focusMode', 'false');
-    deactivateFocusMode();
-  });
-}
-
-function deactivateFocusMode() {
-  const tasksSection = document.getElementById('tasks');
-  const pomodoro = document.querySelector('.pomodoro-section');
-  tasksSection.querySelector('.container').appendChild(pomodoro);
-  pomodoro.classList.remove('focus-pomodoro');
-  document.querySelector('.exit-focus')?.remove();
-}
