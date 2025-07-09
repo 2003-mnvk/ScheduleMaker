@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Schedule Maker Pro</title>
+    <title>Karthik Schedule Maker Pro</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -13,7 +13,7 @@
   <body>
     <header>
       <div class="container">
-        <h1>Schedule Maker Pro</h1>
+        <h1>Karthik Schedule Maker Pro</h1>
         <div class="header-controls">
           <button id="theme-toggle" title="Toggle dark mode">
             <i class="fas fa-moon"></i>
@@ -23,6 +23,9 @@
           </button>
           <button id="import-btn" title="Import tasks">
             <i class="fas fa-file-import"></i>
+          </button>
+          <button id="focus-mode">
+            <i class="fas fa-crosshairs"></i> Focus Mode
           </button>
           <input
             type="file"
@@ -156,32 +159,35 @@
               </div>
 
               <!-- Add these new form fields in your existing form -->
-<div class="form-row">
-  <div class="form-group">
-    <label for="recurrence">Repeat</label>
-    <select id="recurrence">
-      <option value="none">No Repeat</option>
-      <option value="daily">Daily</option>
-      <option value="weekly">Weekly</option>
-      <option value="spaced">Spaced Repetition</option>
-    </select>
-  </div>
-  <div class="form-group">
-    <label for="estimated-time">Est. Time (min)</label>
-    <input type="number" id="estimated-time" min="5" value="30">
-  </div>
-</div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="recurrence">Repeat</label>
+                  <select id="recurrence">
+                    <option value="none">No Repeat</option>
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="spaced">Spaced Repetition</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="estimated-time">Est. Time (min)</label>
+                  <input type="number" id="estimated-time" min="5" value="30" />
+                </div>
+              </div>
 
-<div class="form-group">
-  <label for="resources">Resources (comma separated URLs)</label>
-  <input type="text" id="resources" placeholder="https://example.com/notes.pdf, https://example.com/video">
-</div>
+              <div class="form-group">
+                <label for="resources">Resources (comma separated URLs)</label>
+                <input
+                  type="text"
+                  id="resources"
+                  placeholder="https://example.com/notes.pdf, https://example.com/video"
+                />
+              </div>
 
               <div class="form-group">
                 <label for="notes">Notes</label>
                 <textarea id="notes" rows="2"></textarea>
               </div>
-
 
               <button type="submit">Add Task</button>
             </form>
@@ -192,9 +198,21 @@
               <span id="pending-tasks">Pending: 0</span>
             </div>
 
-            <ul id="task-list">
-              <!-- Tasks will be populated dynamically -->
-            </ul>
+            <div class="task-sections">
+              <div class="task-section">
+                <h3>Pending Tasks</h3>
+                <ul id="pending-task-list" class="task-list">
+                  <!-- Pending tasks will be populated dynamically -->
+                </ul>
+              </div>
+
+              <div class="task-section">
+                <h3>Completed Tasks</h3>
+                <ul id="completed-task-list" class="task-list">
+                  <!-- Completed tasks will be populated dynamically -->
+                </ul>
+              </div>
+            </div>
 
             <button id="delete-completed" class="delete-btn">
               <i class="fas fa-trash"></i> Clear Completed Tasks
